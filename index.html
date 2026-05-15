@@ -11,7 +11,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Amiri&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-<script src="https://cnjs.clouflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <style>
 
@@ -29,6 +29,7 @@
   flex-direction: column;
   gap: 15px;
   padding: 10px;
+  max-height: 400px;
 }
 
 /* التعليق */
@@ -47,6 +48,7 @@
   width: 45px;
   height: 45px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 /* المحتوى */
@@ -55,13 +57,17 @@
 }
 
 /* الاسم */
-.comment-name { color: var(--main-gold); }
+.comment-name { 
+  color: var(--main-gold);
+  font-weight: bold;
+}
 
 /* النص */
 .comment-text {
   font-size: 14px;
   margin-top: 3px;
   line-height: 1.4;
+  word-break: break-word;
 }
 
 /* زر اللايك */
@@ -72,6 +78,7 @@
   cursor: pointer;
   font-size: 13px;
   color: #aaa;
+  flex-shrink: 0;
 }
 
 .comment-like i {
@@ -98,6 +105,8 @@
   --main-gold-trans: rgba(214, 197, 174, 0.15);
   --bg-black: #000000;
   --text-white: #ffffff;
+  --app-color: #D6C5AE;
+  --app-color-transparent: rgba(214, 197, 174, 0.15);
 }
 
 body { 
@@ -105,8 +114,9 @@ body {
   font-family: 'Cairo', sans-serif;
   background: var(--bg-black);
   color: white; 
-  overflow: hidden; /* لمنع السكرول المزدوج */
+  overflow: hidden;
 }
+
 #bg { 
   position: fixed; 
   top: 0; 
@@ -145,7 +155,7 @@ body {
 .start-btn { 
   padding: 18px 40px; 
   font-size: 18px; 
-  font-family: 'Tajawal', sans-serif; 
+  font-family: 'Cairo', sans-serif; 
   border-radius: 20px; 
   border: none; 
   backdrop-filter: blur(10px); 
@@ -154,6 +164,10 @@ body {
   cursor: pointer; 
   transition: 0.3s; 
   box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+}
+
+.start-btn:active {
+  transform: scale(0.95);
 }
 
 #splashScreen { 
@@ -184,12 +198,13 @@ body {
   100% { transform: scale(1); opacity: 0.8; } 
 }
 
-/* الحاوية الرئيسية وشريط التنقل - تم إصلاح التموضع */
+/* الحاوية الرئيسية وشريط التنقل */
 #mainApp { 
-  display: none; /* تغيير لضمان عدم تداخل الطول */
+  display: none;
   min-height: 100dvh; 
   position: relative; 
   z-index: 5; 
+  flex-direction: row;
 }
 
 .header-container { 
@@ -198,13 +213,20 @@ body {
   align-items: center; 
   padding: 15px 0 10px 0; 
   background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent); 
-  position: fixed; /* جعل القائمة تطفو فوق الفيد */
+  position: fixed; 
   top: 0; 
   left: 0;
   right: 0;
   z-index: 100; 
   gap: 10px; 
   width: 100%; 
+}
+
+.desktop-logo {
+  display: none;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
 }
 
 .streak-badge { 
@@ -246,7 +268,7 @@ body {
   color: white; 
   padding: 10px 15px; 
   border-radius: 20px; 
-  font-family: 'Tajawal', sans-serif; 
+  font-family: 'Cairo', sans-serif; 
   font-size: 13px; 
   font-weight: bold; 
   cursor: pointer; 
@@ -259,6 +281,10 @@ body {
   color: var(--app-color); 
   border: 1px solid var(--app-color); 
   box-shadow: none; 
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
 }
 
 /* الأقسام العامة */
@@ -274,10 +300,7 @@ body {
   display: flex; 
 }
 
-/* ========================================
-   تنسيقات التيك توك العمودي (رسالة اليوم)
-   (سريعة وسلسة وملء الشاشة تماماً)
-   ======================================== */
+/* تنسيقات التيك توك العمودي */
 #todayTab { 
   padding: 0; 
   margin: 0; 
@@ -289,7 +312,7 @@ body {
   width: 100vw; 
   overflow-y: scroll; 
   scroll-snap-type: y mandatory; 
-  scroll-behavior: smooth; /* للحفاظ على سلاسة الأداء وإلغاء البطء */
+  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none; 
   position: relative;
@@ -309,6 +332,7 @@ body {
   scroll-snap-align: start;
   background: #000;
 }
+
 .post-bg-blur { 
   position: absolute; 
   top: -5%; left: -5%; right: -5%; bottom: -5%;
@@ -323,13 +347,14 @@ body {
 .post-img {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* يخليها مرتبة */
+  object-fit: cover;
+  z-index: 1;
 }
 
 /* الأزرار الجانبية الزجاجية */
 .feed-side-actions {
   position: absolute;
-  right: 15px; /* وضعها دائماً على اليمين */
+  right: 15px;
   bottom: 100px;
   z-index: 100;
   display: flex;
@@ -347,7 +372,7 @@ body {
 
 .feed-action-btn { 
   background: rgba(0, 0, 0, 0.5); 
-  border: 2px solid var(--main-gold); /* إطار ذهبي */
+  border: 2px solid var(--main-gold);
   backdrop-filter: blur(8px);
   color: white; 
   font-size: 22px; 
@@ -359,6 +384,7 @@ body {
   width: 52px; 
   height: 52px; 
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
 }
 
 .feed-action-btn:active { 
@@ -368,7 +394,7 @@ body {
 .feed-action-label { 
   font-size: 12px;
   font-weight: bold;
-  color: var(--main-gold); /* الأرقام تحت الأزرار ذهبية */
+  color: var(--main-gold);
   text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
@@ -377,10 +403,12 @@ body {
   50% { transform: scale(1.1); } 
   100% { transform: scale(1); } 
 }
+
 .feed-action-btn.liked {
   background: var(--main-gold);
   color: var(--bg-black);
 }
+
 .feed-action-btn.liked .icon-filled { 
   animation: pulseHeart 0.3s ease; 
 }
@@ -389,9 +417,11 @@ body {
   position: absolute; 
   transition: opacity 0.3s, color 0.3s; 
 }
+
 .feed-action-btn i {
-  color: inherit; /* عشان يتبع لون الزر */
+  color: inherit;
 }
+
 .icon-filled { 
   opacity: 0; 
   color: var(--app-color); 
@@ -476,13 +506,11 @@ body {
   font-family: 'Cairo', sans-serif; 
 }
 
-
-/* ========================================
-   تنسيقات الأقسام (المفضلات وسوي رسالتك) 
-   ======================================== */
+/* تنسيقات الأقسام (المفضلات وسوي رسالتك) */
 #favTab, #createTab {
-  padding-top: 110px; /* لضمان عدم اختفائها تحت القائمة العلوية العائمة */
+  padding-top: 110px;
   padding-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .action-btn { 
@@ -490,7 +518,7 @@ body {
   padding: 12px 5px; 
   border-radius: 15px; 
   border: none; 
-  font-family: 'Tajawal', sans-serif; 
+  font-family: 'Cairo', sans-serif; 
   font-size: 14px; 
   font-weight: bold; 
   cursor: pointer; 
@@ -513,6 +541,8 @@ body {
   gap: 10px; 
   width: 100%; 
   max-width: 500px; 
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 .fav-item { 
@@ -524,6 +554,10 @@ body {
   border: 2px solid rgba(255,255,255,0.1); 
   transition: 0.3s; 
   cursor: pointer; 
+}
+
+.fav-item:active {
+  transform: scale(0.95);
 }
 
 .empty-state { 
@@ -622,11 +656,16 @@ body {
   border: 1px dashed rgba(214, 197, 174, 0.5); 
   padding: 10px; 
   border-radius: 10px; 
-  font-family: 'Tajawal'; 
+  font-family: 'Cairo', sans-serif; 
   font-size: 13px; 
   font-weight: bold; 
   cursor: pointer; 
   text-align: center;
+  transition: 0.3s;
+}
+
+.add-btn:active {
+  transform: scale(0.95);
 }
 
 .tools-panel { 
@@ -647,7 +686,7 @@ body {
   color: white; 
   border-radius: 10px; 
   padding: 10px; 
-  font-family: inherit; 
+  font-family: 'Cairo', sans-serif; 
   box-sizing: border-box; 
   outline: none; 
   text-align: right;
@@ -656,6 +695,10 @@ body {
 .custom-select option { 
   background: #333; 
   color: white; 
+}
+
+.custom-input::placeholder {
+  color: rgba(255,255,255,0.5);
 }
 
 .slider-container { 
@@ -685,10 +728,15 @@ input[type=range] {
   border: 1px solid rgba(255, 59, 48, 0.5); 
   padding: 10px; 
   border-radius: 10px; 
-  font-family: 'Tajawal'; 
+  font-family: 'Cairo', sans-serif; 
   font-weight: bold; 
   cursor: pointer; 
-  width: 100%; 
+  width: 100%;
+  transition: 0.3s;
+}
+
+.delete-btn:active {
+  transform: scale(0.95);
 }
 
 /* النوافذ والإشعارات */
@@ -744,6 +792,16 @@ input[type=range] {
   background: var(--main-gold) !important;
   color: #000 !important;
   font-weight: bold;
+  padding: 12px 20px !important;
+  border-radius: 10px !important;
+  border: none !important;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 100%;
+}
+
+.submit-btn:active {
+  transform: scale(0.95);
 }
 
 #toast-container { 
@@ -764,7 +822,7 @@ input[type=range] {
   color: black; 
   padding: 12px 20px; 
   border-radius: 20px; 
-  font-family: 'Tajawal', sans-serif; 
+  font-family: 'Cairo', sans-serif; 
   font-weight: bold; 
   font-size: 14px; 
   box-shadow: 0 5px 20px rgba(0,0,0,0.4); 
@@ -778,15 +836,13 @@ input[type=range] {
   opacity: 1; 
   transform: translateY(0); 
 }
-/* =========================================================
-   تنسيقات الكمبيوتر (شاشات التيك توك) 
-   ========================================================= */
+
+/* تنسيقات الكمبيوتر */
 @media (min-width: 768px) {
   #todayTab {
     padding-top: 0 !important;
     height: 100vh;
   }
-
 
   .feed-container {
     width: calc(100% - 280px);
@@ -796,12 +852,12 @@ input[type=range] {
     scroll-snap-type: y mandatory;
   }
 
-  /* نقل الأزرار لليسار وتوسيطها عشان القائمة الجانبية ما تغطي عليها */
   .feed-side-actions {
-    right: 300px; /* القائمة 280 + مسافة 20 */
+    right: 300px;
     bottom: 50%;
     transform: translateY(50%);
   }
+
   .post {
     display: flex;
     justify-content: center;
@@ -810,60 +866,43 @@ input[type=range] {
     box-sizing: border-box;
   }
 
-  /* ترتيب حجم الصورة عشان تطلع كاملة وما تنقص على الشاشة العريضة */
   .post-img {
     width: auto;
     height: 92vh;
-
     max-width: 420px;
     object-fit: cover;
-
     border-radius: 25px;
-
     box-shadow:
       0 0 40px rgba(0,0,0,0.5),
       0 0 80px rgba(214,197,174,0.08);
   }
+
   #mainApp {
-    flex-direction: row; /* جعل العناصر بجانب بعضها */
+    flex-direction: row;
     align-items: flex-start;
   }
 
-  /* تحويل القائمة العلوية إلى قائمة جانبية على اليمين */
   .header-container {
     position: fixed;
     top: 0;
     right: 0;
     width: 280px;
     height: 100vh;
-    background: #0a0a0a;
-    border-left: 2px solid var(--main-gold-trans);
+    background: linear-gradient(180deg, rgba(20,20,20,0.9), rgba(20,20,20,0.6));
+    border-left: 1px solid rgba(214, 197, 174, 0.2);
+    backdrop-filter: blur(15px);
     padding: 30px 20px;
     z-index: 200;
+    align-items: flex-start;
+    justify-content: flex-start;
   }
 
-  background: linear-gradient(
-    180deg,
-    rgba(20,20,20,0.9),
-    rgba(20,20,20,0.6)
-  );
-
-  backdrop-filter: blur(15px);
-  border-left: 1px solid rgba(214, 197, 174, 0.2);
-
-  padding: 20px;
-  box-sizing: border-box;
-  align-items: flex-start;
-  justify-content: flex-start;
-  z-index: 100;
-}
-
   .desktop-logo {
-    display: block !important; /* إظهار اللوجو */
+    display: block !important;
   }
 
   .header {
-    flex-direction: column; /* ترتيب الأزرار عمودياً */
+    flex-direction: column;
     width: 100%;
     gap: 15px;
     padding: 0;
@@ -881,17 +920,16 @@ input[type=range] {
     border-radius: 12px;
   }
 
-.nav-btn:hover {
-  background: rgba(214, 197, 174, 0.08);
-}
+  .nav-btn:hover {
+    background: rgba(214, 197, 174, 0.08);
+  }
 
-.nav-btn.active {
+  .nav-btn.active {
     background: var(--main-gold-trans);
     color: var(--main-gold);
     border-right: 4px solid var(--main-gold);
   }
 
-  /* زر تسجيل الدخول */
   .login-btn-desktop {
     display: block !important;
     width: 100%;
@@ -902,7 +940,7 @@ input[type=range] {
     border-radius: 5px;
     font-size: 16px;
     font-weight: bold;
-    font-family: 'Tajawal', sans-serif;
+    font-family: 'Cairo', sans-serif;
     margin-top: 30px;
     cursor: pointer;
     transition: 0.3s;
@@ -912,13 +950,11 @@ input[type=range] {
     background-color: #cbb89d;
   }
 
-  /* دفع المحتوى لليسار عشان ما يجي تحت القائمة الجانبية */
   .tab-content {
     margin-right: 280px;
     width: calc(100% - 280px);
   }
 
-  /* تكبير حجم الرسالة لتناسب شاشة الكمبيوتر */
   .card {
     max-width: 500px;
     padding: 20px;
@@ -963,8 +999,7 @@ input[type=range] {
   </div>
 
   <div id="todayTab" class="tab-content active-tab">
-    <div class="feed-container" id="feed">
-      </div>
+    <div class="feed-container" id="feed"></div>
   </div>
 
   <div id="favTab" class="tab-content">
@@ -1007,21 +1042,18 @@ input[type=range] {
           <textarea id="activeTextInput" class="custom-input" placeholder="اكتب رسالتك..." oninput="updateActiveElementText()" rows="2"></textarea>
           <div class="actions-row" style="display:flex; justify-content:space-between; gap:8px;">
             <select id="activeFont" class="custom-select" onchange="updateActiveElementText()">
+              <option value="Cairo">كايرو</option>
               <option value="Tajawal">تجوال</option>
               <option value="Amiri">أميري</option>
-              <option value="Cairo">كايرو</option>
               <option value="Reem Kufi">كوفي</option>
               <option value="Almarai">المراعي</option>
-              <option value="Lalezar">لاله زار</option>
-              <option value="Changa">تشانجا</option>
             </select>
             <select id="activeColor" class="custom-select" onchange="updateActiveElementText()">
               <option value="#FFFFFF">أبيض</option>
-              <option value="#000000">أسود</option>
               <option value="#D6C5AE">بيج</option>
               <option value="#FFD700">ذهبي</option>
+              <option value="#000000">أسود</option>
               <option value="#8B4513">بني</option>
-              <option value="#2F4F4F">رمادي غامق</option>
             </select>
           </div>
         </div>
@@ -1111,8 +1143,22 @@ input[type=range] {
   </div>
 </div>
 
+<div class="modal-overlay" id="commentsModal" onclick="if(event.target===this) closeModal('commentsModal','commentsContent')">
+  <div class="modal-content" id="commentsContent">
+    <button class="close-modal" onclick="closeModal('commentsModal','commentsContent')">✖</button>
+    
+    <h3>التعليقات 💬</h3>
+    <div id="commentsList"></div>
+
+    <div class="comment-input-row">
+      <input id="commentInput" class="custom-input" placeholder="اكتب تعليقك...">
+      <button class="submit-btn" onclick="addComment()">إرسال</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ================= المتغيرات الأساسية =================
+// المتغيرات الأساسية
 const images = [
 "images/1.jpg", "images/2.jpg", "images/3.jpg", "images/4.jpg",
 "images/5.jpg", "images/6.jpg", "images/7.jpg", "images/8.jpg",
@@ -1126,10 +1172,10 @@ const images = [
 "images/37.jpg", "images/38.jpg", "images/39.jpg", "images/40.jpg",
 "images/41.jpg", "images/42.jpg", "images/43.jpg", "images/44.jpg"
 ];
-const MAX_VIEWS = 3;
 const API_KEY = "3863ddcd-c4bc-4099-9148-d4344f98bdd2"; 
 let currentFavOpenIndex = null; 
 let currentShareImgSrc = "";
+let currentPost = null;
 
 // إشعار التوست
 function showToast(message) {
@@ -1158,7 +1204,7 @@ function showToast(message) {
   }, 3000);
 }
 
-// ================= نظام التشغيل والشعلة =================
+// نظام التشغيل والشعلة
 function initApp() {
   const today = new Date().toDateString();
   let savedDate = localStorage.getItem("appDate");
@@ -1253,12 +1299,12 @@ function showSplashScreen() {
       document.getElementById("mainApp").style.display = "flex";
       renderFeed(); 
       loadFavorites(); 
+      setupDoubleTap();
     }, 500);
   }, 2000);
 }
 
-// ================= نظام التيك توك (رسالة اليوم) =================
-// سريع وسلس جداً
+// نظام التيك توك
 function renderFeed() {
   const feed = document.getElementById("feed");
   feed.innerHTML = "";
@@ -1274,7 +1320,8 @@ function renderFeed() {
       <div class="feed-side-actions">
         <div class="feed-action-wrapper">
           <button class="feed-action-btn" onclick="toggleFeedLike(this, ${index})">
-            <i class="fas fa-heart"></i>
+            <i class="far fa-heart icon-outlined"></i>
+            <i class="fas fa-heart icon-filled"></i>
           </button>
           <span class="feed-action-label" id="feed-count-${index}">1.2K</span>
         </div>
@@ -1309,11 +1356,15 @@ function setupDoubleTap() {
       let timeDiff = currentTime - lastClick;
       
       if (timeDiff < 300 && timeDiff > 0) {
-        const heart = post.querySelector('.heart-animation');
-        heart.classList.remove('show'); 
-        void heart.offsetWidth; 
-        heart.classList.add('show');
-        setTimeout(() => heart.classList.remove('show'), 600);
+        const rect = post.getBoundingClientRect();
+        const heart = document.createElement('div');
+        heart.className = 'heart-animation show';
+        heart.innerHTML = '❤️';
+        heart.style.left = (e.clientX - rect.left) + 'px';
+        heart.style.top = (e.clientY - rect.top) + 'px';
+        post.appendChild(heart);
+        
+        setTimeout(() => heart.remove(), 600);
         
         const likeBtn = post.querySelector('.feed-action-wrapper .feed-action-btn'); 
         if (!likeBtn.classList.contains('liked')) {
@@ -1332,16 +1383,12 @@ function toggleFeedLike(btn, imgIndex) {
   
   if (!btn.classList.contains('liked')) {
     btn.classList.add('liked');
-    btn.querySelector('.icon-outlined').style.opacity = '0';
-    btn.querySelector('.icon-filled').style.opacity = '1';
     countSpan.innerText = (count + 0.1).toFixed(1) + 'K';
     likedImages[imgIndex] = true;
     showToast("تم الحفظ في المفضلة 🤍");
   } else {
     btn.classList.remove('liked');
-    btn.querySelector('.icon-outlined').style.opacity = '1';
-    btn.querySelector('.icon-filled').style.opacity = '0';
-    countSpan.innerText = (count - 0.1).toFixed(1) + 'K';
+    countSpan.innerText = Math.max(0, count - 0.1).toFixed(1) + 'K';
     delete likedImages[imgIndex];
   }
   
@@ -1354,7 +1401,13 @@ function openShareMenu(src) {
   document.getElementById('shareSheetModal').style.display = "flex"; 
 }
 
-// ================= التنقل والنوافذ =================
+function openComments(index) {
+  currentPost = index;
+  showModal('commentsModal','commentsContent');
+  loadComments();
+}
+
+// التنقل والنوافذ
 function switchTab(tabId, btnId) {
   document.querySelectorAll('.tab-content').forEach(t => {
     t.classList.remove('active-tab');
@@ -1428,7 +1481,7 @@ async function shareFromSrc(src) {
   }
 }
 
-// ================= نظام المفضلات الأصلي =================
+// نظام المفضلات
 function loadFavorites() {
   const grid = document.getElementById("favoritesGrid"); 
   grid.innerHTML = "";
@@ -1509,7 +1562,7 @@ async function sendQuoteToEmail() {
   btn.disabled = false; 
 }
 
-// ================= نظام "سوي رسالتك" المطور الأصلي (بدون حذف) =================
+// نظام "سوي رسالتك"
 const captureArea = document.getElementById("captureArea");
 const templateBg = document.getElementById("templateBg");
 let elementCounter = 0;
@@ -1655,7 +1708,7 @@ function deleteActiveElement() {
   }
 }
 
-// السحب الشامل (للنصوص، الصور، وللخلفية)
+// السحب الشامل
 captureArea.addEventListener("touchstart", dragStart, {passive: false});
 captureArea.addEventListener("touchend", dragEnd, false);
 captureArea.addEventListener("touchmove", drag, {passive: false});
@@ -1741,7 +1794,7 @@ function drag(e) {
   }
 }
 
-// ================= دوال التحميل والنشر المطورة =================
+// دوال التحميل والنشر
 function exportCustomImage() {
   const btn = document.querySelector('.creator-card .action-btn:nth-child(1)');
   const originalText = btn.innerHTML;
@@ -1780,7 +1833,6 @@ function publishCustomImage() {
     activeElement.classList.remove("selected");
   }
   
-  // محاكاة عملية رفع الصورة والنشر على التطبيق
   setTimeout(() => {
     showToast("تم نشر رسالتك بنجاح! 🌟 ستظهر قريباً في قسم رسالة اليوم.");
     btn.innerHTML = originalText;
@@ -1788,16 +1840,7 @@ function publishCustomImage() {
   }, 1500);
 }
 
-window.addEventListener('DOMContentLoaded', addNewText);
-
-let currentPost = null;
-
-function openComments(index) {
-  currentPost = index;
-  showModal('commentsModal','commentsContent');
-  loadComments();
-}
-
+// التعليقات
 function loadComments() {
   const list = document.getElementById("commentsList");
   list.innerHTML = "";
@@ -1805,7 +1848,7 @@ function loadComments() {
   let comments = JSON.parse(localStorage.getItem("comments_" + currentPost)) || [];
 
   if (comments.length === 0) {
-    list.innerHTML = "<p style='color:#aaa'>لا يوجد تعليقات</p>";
+    list.innerHTML = "<p style='color:#aaa; text-align:center;'>لا يوجد تعليقات</p>";
     return;
   }
 
@@ -1850,6 +1893,7 @@ function addComment() {
 
   input.value = "";
   loadComments();
+  showToast("تم إضافة التعليق 💬");
 }
 
 function toggleCommentLike(index) {
@@ -1871,21 +1915,5 @@ function toggleCommentLike(index) {
 }
 </script>
 
-<div class="modal-overlay" id="commentsModal" onclick="if(event.target===this) closeModal('commentsModal','commentsContent')">
-  <div class="modal-content" id="commentsContent">
-    <button class="close-modal" onclick="closeModal('commentsModal','commentsContent')">✖</button>
-    
-    <h3>التعليقات 💬</h3>
-     <div id="commentsList"></div>
-
-<div class="comment-input-row">
-  <input id="commentInput" class="custom-input" placeholder="اكتب تعليقك...">
-  <button class="submit-btn" onclick="addComment()">إرسال</button>
-</div>
-</div>
-
 </body>
 </html>
-
-
-
